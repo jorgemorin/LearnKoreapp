@@ -14,6 +14,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $name
  * @property string $email
  * @property string $role        'user' | 'admin'
+ * @property bool   $is_active   false = cuenta desactivada por un admin
  * @property string $password
  */
 class User extends Authenticatable
@@ -29,6 +30,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'is_active',
     ];
 
     protected $hidden = [
@@ -41,6 +43,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
+            'is_active'         => 'boolean',
         ];
     }
 
@@ -60,6 +63,24 @@ class User extends Authenticatable
         return $this->role === self::ROLE_USER;
     }
 
+    /** Comprueba si la cuenta está activa. */
+    public function isActive(): bool
+    {
+        return (bool) $this->is_active;
+    }
+
+    // ── Scopes ───────────────────────────────────────────────────────────────
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeAdmins($query)
+    {
+        return $query->where('role', self::ROLE_ADMIN);
+    }
+
     // ---------------------------------------------------------------------------
     // Relaciones
     // ---------------------------------------------------------------------------
@@ -72,5 +93,15 @@ class User extends Authenticatable
     public function studyLogs()
     {
         return $this->hasMany(StudyLog::class);
+    }
+
+    public function reports()
+    {
+        return $this->hasMany(UserReport::class, 'user_id');
+    }
+
+    public function srsSettings()
+    {
+        return $this->hasOne(UserSrsSettings::class);
     }
 }

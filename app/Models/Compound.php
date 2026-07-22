@@ -63,4 +63,10 @@ class Compound extends Model
     {
         return $query->where('status', self::STATUS_PENDING);
     }
+
+    /** Progreso de usuarios para este compound (morfológico). */
+    public function userProgress()
+    {
+        return $this->morphMany(UserProgress::class, 'item');
+    }
 }

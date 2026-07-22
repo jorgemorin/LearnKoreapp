@@ -43,6 +43,13 @@ class Login extends Component
             return;
         }
 
+        // Verificar que la cuenta está activa
+        if (! Auth::user()->is_active) {
+            Auth::logout();
+            $this->addError('email', 'Tu cuenta ha sido desactivada. Contacta con el administrador.');
+            return;
+        }
+
         // Regenera el ID de sesión por seguridad (solo si la sesión está disponible)
         if (request()->hasSession()) {
             request()->session()->regenerate();

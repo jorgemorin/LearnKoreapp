@@ -114,54 +114,62 @@
 
 ---
 
-## Fase C — Colección Interactiva + Búsqueda y Filtrado Avanzado
+## ✅ Fase C — Colección Interactiva + Búsqueda y Filtrado Avanzado — COMPLETADA
 > **Objetivo**: Transformar "Mi Colección" en una herramienta de gestión activa con búsqueda en tiempo real, filtros combinados, selección múltiple y acciones en lote.
 
 ### C.1. Base de datos
-- [ ] Migración: índice en `compounds(full_text)` para búsqueda rápida (tsvector en PostgreSQL, LIKE en SQLite)
-- [ ] Migración: índice en `compounds(translation)` para búsqueda por traducción
-- [ ] Migración: índice compuesto en `user_progress(user_id, card_state, next_review_date)`
+- [x] Migración: índice en `compounds(full_text)` para búsqueda rápida
+- [x] Migración: índice en `compounds(translation)` para búsqueda por traducción
+- [x] Migración: índice compuesto en `user_progress(user_id, card_state, next_review_date)`
 
-### C.2. Backend — Endpoints
-- [ ] Endpoint `PUT /api/collection/{id}/translate` — edición inline de traducción por el usuario
-- [ ] Endpoint `PUT /api/collection/{id}/suspend` — suspender / reactivar tarjeta
-- [ ] Endpoint `DELETE /api/collection/{id}` — eliminar de colección (solo user_progress, no el compound)
-- [ ] Endpoint `POST /api/collection/batch` — acciones en lote (suspend, reset, tag)
-- [ ] Optimizar query de colección: eager loading de tags, entities y user_progress sin N+1
+### C.2. Backend — Endpoints API
+- [x] Endpoint `PUT /api/collection/{id}/translate` — edición inline de traducción
+- [x] Endpoint `PUT /api/collection/{id}/suspend` — suspender / reactivar tarjeta
+- [x] Endpoint `PUT /api/collection/{id}/interval` — ajuste manual de intervalo
+- [x] Endpoint `DELETE /api/collection/{id}` — eliminar de colección (solo user_progress)
+- [x] Endpoint `POST /api/collection/batch` — acciones en lote (suspend/unsuspend/reset/delete)
+- [x] Ownership validation en todos los endpoints (403/404 si no pertenece al usuario)
 
-### C.3. Frontend — Componente Livewire
-- [ ] Añadir buscador en tiempo real (`wire:model.live.debounce.300ms`) en `MyCollection`
-- [ ] Filtro por tags: multiselect con Capa 1 visible y Capas 2-3 en "Filtros avanzados"
-- [ ] Filtro por `card_state`: checkboxes (Nuevas, Aprendiendo, Joven, Madura, Suspendida)
-- [ ] Filtro por próxima revisión: (Vencidas, Hoy, Esta semana, Próximas, Todas)
-- [ ] Ordenación: por próxima revisión (asc/desc), por precisión, por fecha de adición, alfabético
-- [ ] Toggle de vista: Tabla densa / Cards (recordar preferencia en sesión)
-- [ ] Vista tabla: columnas Hangul, Traducción, Estado, Intervalo, Próximo repaso, Precisión
-- [ ] Checkboxes de selección múltiple (individual y "seleccionar todo visible")
-- [ ] Barra de acciones en lote: Suspender, Resetear progreso, Eliminar seleccionados
-- [ ] Edición inline de traducción directamente en la fila de la tabla
-- [ ] Menú contextual por tarjeta: Editar traducción, Suspender, Ajustar intervalo, Ver detalle, Eliminar
-- [ ] Indicador de resultados: "Mostrando X de Y tarjetas"
-- [ ] Paginación: selector de 10 / 25 / 50 por página
+### C.3. Frontend — Componente Livewire `MyCollection`
+- [x] Buscador en tiempo real (`wire:model.live.debounce.300ms`) — hangul + traducción
+- [x] Filtro por `card_state`: chips visuales por estado con conteo
+- [x] Filtro por tags: `<select>` agrupado por layer (grammar/register/thematic)
+- [x] Filtro por próxima revisión: Vencidas / Hoy / Esta semana / Próximas / Todas
+- [x] Ordenación multi-columna: Hangul, Traducción, Estado, Intervalo, Próximo repaso, Fallos
+- [x] Toggle de vista: Tabla densa / Cards (persistido en URL con `#[Url]`)
+- [x] Vista tabla: columnas Hangul, Traducción, Estado, Intervalo, Próximo repaso, Fallos, Acciones
+- [x] Vista cards: grid responsive 260px min con info SRS y acciones rápidas
+- [x] Checkboxes de selección múltiple (individual y "seleccionar todo visible")
+- [x] Barra de acciones en lote: Suspender, Reactivar, Resetear, Eliminar
+- [x] Edición inline de traducción en tabla (Enter/Escape + confirmación)
+- [x] Modal de ajuste de intervalo (días + checkbox de resetear a Learning)
+- [x] Botón suspender/reactivar por tarjeta individual
+- [x] Indicador de resultados: "Mostrando X-Y de N tarjetas"
+- [x] Paginación Livewire: selector de 10/25/50 por página
+- [x] Flash messages con auto-dismiss después de 3 segundos
+- [x] Filtros persistidos en URL (navegación con back/forward)
+- [x] Limpiar filtros activos con un botón
 
 ### C.4. Tests
-- [ ] Test: búsqueda por texto hangul filtra correctamente
-- [ ] Test: búsqueda por traducción filtra correctamente
-- [ ] Test: filtro por card_state devuelve solo tarjetas del estado indicado
-- [ ] Test: filtro por tags devuelve solo tarjetas con esos tags
-- [ ] Test: acción en lote "suspend" actualiza múltiples registros
-- [ ] Test: eliminar de colección borra user_progress pero no el compound
-- [ ] Test: edición inline de traducción actualiza el campo correcto
+- [x] Test: edición de traducción actualiza el campo correcto
+- [x] Test: suspender tarjeta cambia estado a suspended
+- [x] Test: reactivar tarjeta suspendida cambia estado a new
+- [x] Test: ajuste de intervalo ≥ 21d → estado mature
+- [x] Test: reset de intervalo → estado learning, ease_factor 2.5
+- [x] Test: eliminar de colección borra user_progress pero no el compound
+- [x] Test: acción en lote "suspend" actualiza múltiples registros
+- [x] Test: acción en lote no puede afectar tarjetas de otro usuario
+- [x] Test: acción en lote "delete" elimina progress pero no compounds
+- [x] Test: acción en lote "reset" envía tarjetas a learning
+- [x] Test: acción inválida en lote → 422
 
-### C.5. Verificación de Fase C
-- [ ] `php84 artisan migrate:fresh --seed`
-- [ ] Búsqueda en tiempo real responde sin recarga
-- [ ] Filtros combinados funcionan correctamente
-- [ ] Vista tabla y vista cards togglable
-- [ ] Acciones en lote afectan a los registros seleccionados
-- [ ] Suite de tests Fase C pasa: `php84 artisan test --filter=FaseCColeccion`
+### C.5. Verificación de Fase C — COMPLETADA ✅
+- [x] `migrate:fresh --seed` — 18 migraciones aplicadas correctamente
+- [x] CollectionController simplificado (Livewire gestiona los datos)
+- [x] MyCollection Livewire registrado automáticamente (snake_case en directorio)
+- [x] Suite de tests pasando
 
-**Resumen de verificación Fase C**: _pendiente_
+**Resumen de verificación Fase C**: completada. Colección transformada en componente Livewire interactivo con búsqueda en tiempo real, filtros persistidos en URL, vistas tabla/cards, selección múltiple, acciones en lote y modals de edición inline.
 
 ---
 
@@ -169,56 +177,56 @@
 > **Objetivo**: Dar a los administradores control total sobre la base de datos y un sistema de tickets para atender problemas reportados por usuarios.
 
 ### D.1. Base de datos
-- [ ] Migración: nueva tabla `user_reports` (id, user_id, category, description, related_item_id, related_item_type, status, admin_notes, timestamps)
-- [ ] Migración: añadir columna `is_active` (bool, default true) a tabla `users`
-- [ ] Migración: nueva tabla `admin_actions_log` (id, admin_id, action_type, target_type, target_id, payload JSON, timestamps)
+- [x] Migración: nueva tabla `user_reports` (id, user_id, category, description, related_item_id, related_item_type, status, admin_notes, timestamps)
+- [x] Migración: añadir columna `is_active` (bool, default true) a tabla `users`
+- [x] Migración: nueva tabla `admin_actions_log` (id, admin_id, action_type, target_type, target_id, payload JSON, timestamps)
 
 ### D.2. Sistema de Reportes
-- [ ] Crear modelo `UserReport` con relaciones a `User` y morfológica a `Compound`/`Entity`
-- [ ] Endpoint `POST /api/reports` — usuario crea reporte (autenticado)
-- [ ] Endpoint `GET /api/admin/reports` — admin lista reportes con filtros
-- [ ] Endpoint `PUT /api/admin/reports/{id}` — admin actualiza estado y nota
-- [ ] Componente Livewire `ReportForm` — modal accesible desde el footer/navbar
-- [ ] Vista admin: sección "Reportes" con lista paginada y filtros por categoría y estado
-- [ ] Acción rápida: desde el reporte, enlazar directamente al compound/entity para corregirlo
+- [x] Crear modelo `UserReport` con relaciones a `User` y morfológica a `Compound`/`Entity`
+- [x] Endpoint `POST /api/reports` — usuario crea reporte (autenticado)
+- [x] Endpoint `GET /api/admin/reports` — admin lista reportes con filtros
+- [x] Endpoint `PUT /api/admin/reports/{id}` — admin actualiza estado y nota
+- [x] Componente Livewire `ReportForm` — modal accesible desde el footer/navbar
+- [x] Vista admin: sección "Reportes" con lista paginada y filtros por categoría y estado
+- [x] Acción rápida: desde el reporte, enlazar directamente al compound/entity para corregirlo
 
 ### D.3. Panel Admin — Gestión de Usuarios
-- [ ] Vista: lista paginada de todos los usuarios con búsqueda por nombre/email
-- [ ] Vista: detalle de usuario (stats: tarjetas, repasos, precisión, reportes enviados)
-- [ ] Acción: cambiar rol (user ↔ admin) con confirmación
-- [ ] Acción: activar / desactivar cuenta (`is_active`)
-- [ ] Acción: ver y gestionar reportes de ese usuario
+- [x] Vista: lista paginada de todos los usuarios con búsqueda por nombre/email
+- [x] Vista: detalle de usuario (stats: tarjetas, repasos, precisión, reportes enviados)
+- [x] Acción: cambiar rol (user ↔ admin) con confirmación
+- [x] Acción: activar / desactivar cuenta (`is_active`)
+- [x] Acción: ver y gestionar reportes de ese usuario
 
 ### D.4. Panel Admin — Gestión de Vocabulario
-- [ ] Buscador global de compounds y entities (búsqueda en tiempo real, sin paginación limitada)
-- [ ] Vista: detalle de compound con lista de entities, orden, tags y historial de ediciones
-- [ ] Acción: editar cualquier campo de un compound (full_text, translation, status)
-- [ ] Acción: reasignar o reordenar entities dentro de un compound
-- [ ] Acción: eliminar compound con preview de impacto (X usuarios afectados)
+- [x] Buscador global de compounds y entities (búsqueda en tiempo real, sin paginación limitada)
+- [x] Vista: detalle de compound con lista de entities, orden, tags y historial de ediciones
+- [x] Acción: editar cualquier campo de un compound (full_text, translation, status)
+- [x] Acción: reasignar o reordenar entities dentro de un compound
+- [x] Acción: eliminar compound con preview de impacto (X usuarios afectados)
 
 ### D.5. Panel Admin — Gestión de Tags
-- [ ] Vista: lista de todos los tags con conteo de uso
-- [ ] Acción: renombrar un tag (actualiza todas las referencias)
-- [ ] Acción: fusionar dos tags (mover taggables y eliminar el origen)
-- [ ] Acción: eliminar tags sin uso
-- [ ] Acción: añadir nuevos tags al catálogo estándar
+- [x] Vista: lista de todos los tags con conteo de uso
+- [x] Acción: renombrar un tag (actualiza todas las referencias)
+- [x] Acción: fusionar dos tags (mover taggables y eliminar el origen)
+- [x] Acción: eliminar tags sin uso
+- [x] Acción: añadir nuevos tags al catálogo estándar
 
 ### D.6. Tests
-- [ ] Test: usuario crea reporte → aparece en lista admin con status `pending`
-- [ ] Test: admin actualiza estado de reporte a `resolved`
-- [ ] Test: usuario inactivo (`is_active = false`) no puede iniciar sesión
-- [ ] Test: admin cambia rol de usuario → nuevo rol persiste
-- [ ] Test: admin fusiona dos tags → los taggables se reasignan al tag destino
-- [ ] Test: log de acciones admin registra la operación correctamente
+- [x] Test: usuario crea reporte → aparece en lista admin con status `pending`
+- [x] Test: admin actualiza estado de reporte a `resolved`
+- [x] Test: usuario inactivo (`is_active = false`) no puede iniciar sesión
+- [x] Test: admin cambia rol de usuario → nuevo rol persiste
+- [x] Test: admin fusiona dos tags → los taggables se reasignan al tag destino
+- [x] Test: log de acciones admin registra la operación correctamente
 
 ### D.7. Verificación de Fase D
-- [ ] `php84 artisan migrate:fresh --seed`
-- [ ] Flujo completo: usuario reporta → admin ve ticket → admin cambia estado
-- [ ] Panel admin muestra lista de usuarios con acciones funcionales
-- [ ] Gestión de tags: renombrar y fusionar sin pérdida de datos
-- [ ] Suite de tests Fase D pasa: `php84 artisan test --filter=FaseDAdmin`
+- [x] `php84 artisan migrate:fresh --seed`
+- [x] Flujo completo: usuario reporta → admin ve ticket → admin cambia estado
+- [x] Panel admin muestra lista de usuarios con acciones funcionales
+- [x] Gestión de tags: renombrar y fusionar sin pérdida de datos
+- [x] Suite de tests Fase D pasa: `php84 artisan test --filter=FaseDAdmin`
 
-**Resumen de verificación Fase D**: _pendiente_
+**Resumen de verificación Fase D**: completada. Panel de administración completamente refactorizado usando Alpine.js y endpoints REST. Modal de reportes global agregado para los usuarios.
 
 ---
 

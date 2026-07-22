@@ -239,8 +239,18 @@
     </main>
 
     <footer class="footer">
-        &copy; {{ date('Y') }} LearnKoreapp — Aprende coreano con IA y repetición espaciada
+        &copy; {{ date('Y') }} LearnKoreapp — Aprende coreano con IA y repetición espaciada 
+        <br><br>
+        @auth
+            <button type="button" onclick="Livewire.dispatch('openReportModal')" style="background:none; border:none; color:var(--color-accent-soft); cursor:pointer; font-size:0.8rem; font-family:inherit; transition:color 0.2s;" onmouseover="this.style.color='var(--color-accent)'" onmouseout="this.style.color='var(--color-accent-soft)'">
+                Reportar un problema o sugerencia
+            </button>
+        @endauth
     </footer>
+
+    @auth
+        <livewire:report-form />
+    @endauth
 
     @livewireScripts
     @stack('scripts')
